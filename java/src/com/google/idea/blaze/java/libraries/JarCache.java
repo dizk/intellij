@@ -173,7 +173,7 @@ public class JarCache {
     }
 
     ImmutableMap<String, BlazeArtifact> projectState =
-        getArtifactsToCache(projectViewSet, projectData);
+        getArtifactsToCache(project, projectViewSet, projectData);
     ImmutableMap<String, File> cachedFiles = readFileState();
     try {
       Map<String, BlazeArtifact> updated =
@@ -233,9 +233,9 @@ public class JarCache {
    * Returns a map from cache key to BlazeArtifact, for all the artifacts which should be cached.
    */
   private static ImmutableMap<String, BlazeArtifact> getArtifactsToCache(
-      ProjectViewSet projectViewSet, BlazeProjectData projectData) {
+      Project project, ProjectViewSet projectViewSet, BlazeProjectData projectData) {
     List<LibraryArtifact> jarLibraries =
-        BlazeLibraryCollector.getLibraries(projectViewSet, projectData).stream()
+        BlazeLibraryCollector.getLibraries(project, projectViewSet, projectData).stream()
             .filter(library -> library instanceof BlazeJarLibrary)
             .map(library -> ((BlazeJarLibrary) library).libraryArtifact)
             .collect(Collectors.toList());

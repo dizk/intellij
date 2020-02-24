@@ -21,6 +21,7 @@ import com.google.idea.blaze.base.model.BlazeLibrary;
 import com.google.idea.blaze.base.model.BlazeProjectData;
 import com.google.idea.blaze.base.projectview.ProjectViewSet;
 import com.google.idea.blaze.base.sync.BlazeSyncPlugin;
+import com.intellij.openapi.project.Project;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 /** Collects libraries from the sync data using all contributors. */
 public class BlazeLibraryCollector {
   public static List<BlazeLibrary> getLibraries(
-      ProjectViewSet projectViewSet, BlazeProjectData blazeProjectData) {
+      Project project, ProjectViewSet projectViewSet, BlazeProjectData blazeProjectData) {
     // Use set to filter out duplicates.
     Set<BlazeLibrary> result = Sets.newLinkedHashSet();
     List<LibrarySource> librarySources = Lists.newArrayList();
@@ -44,14 +45,15 @@ public class BlazeLibraryCollector {
       result.addAll(librarySource.getLibraries());
     }
     Predicate<BlazeLibrary> libraryFilter =
-        librarySources
-            .stream()
-            .map(LibrarySource::getLibraryFilter)
+        librarySources.stream()
+            .map(source -> source.getLibraryFilter(project))
             .filter(Objects::nonNull)
             .reduce(Predicate::and)
             .orElse(o -> true);
 
-    return BlazeLibrarySorter.sortLibraries(
-        result.stream().filter(libraryFilter).collect(Collectors.toList()));
+    List<BlazeLibrary> toReturn =
+        BlazeLibrarySorter.sortLibraries(
+            result.parallelStream().filter(libraryFilter).collect(Collectors.toList()));
+    return toReturn;
   }
 }

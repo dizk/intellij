@@ -52,7 +52,7 @@ public class JavaPrefetchFileSource implements PrefetchFileSource {
       return;
     }
     Collection<BlazeLibrary> libraries =
-        BlazeLibraryCollector.getLibraries(projectViewSet, blazeProjectData);
+        BlazeLibraryCollector.getLibraries(project, projectViewSet, blazeProjectData);
     ArtifactLocationDecoder decoder = blazeProjectData.getArtifactLocationDecoder();
     for (BlazeLibrary library : libraries) {
       if (!(library instanceof BlazeJarLibrary)) {

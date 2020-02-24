@@ -484,7 +484,10 @@ public class BlazeIdeInterfaceAspectsImpl implements BlazeIdeInterface {
                 futures.add(
                     executor.submit(
                         () -> {
-                          totalSizeLoaded.addAndGet(file.getLength());
+                          long length = file.getLength();
+                          if (length > 0) {
+                            totalSizeLoaded.addAndGet(length);
+                          }
                           IntellijIdeInfo.TargetIdeInfo message =
                               aspectStrategy.readAspectFile(file);
                           TargetIdeInfo target =

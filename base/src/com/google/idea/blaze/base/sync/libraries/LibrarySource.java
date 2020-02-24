@@ -17,6 +17,7 @@ package com.google.idea.blaze.base.sync.libraries;
 
 import com.google.common.collect.ImmutableList;
 import com.google.idea.blaze.base.model.BlazeLibrary;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.libraries.Library;
 import java.util.List;
 import java.util.function.Predicate;
@@ -35,7 +36,7 @@ public interface LibrarySource {
    * library is discarded.
    */
   @Nullable
-  Predicate<BlazeLibrary> getLibraryFilter();
+  Predicate<BlazeLibrary> getLibraryFilter(Project project);
 
   /**
    * Returns a filter that allows sources to retain libraries during library garbage collection.
@@ -55,7 +56,7 @@ public interface LibrarySource {
 
     @Nullable
     @Override
-    public Predicate<BlazeLibrary> getLibraryFilter() {
+    public Predicate<BlazeLibrary> getLibraryFilter(Project project) {
       return null;
     }
 

@@ -525,7 +525,7 @@ final class SyncPhaseCoordinator {
         }
         if (projectData != null) {
           int librariesCount =
-              BlazeLibraryCollector.getLibraries(projectViewSet, projectData).size();
+              BlazeLibraryCollector.getLibraries(project, projectViewSet, projectData).size();
           stats
               .setTargetMapSize(projectData.getTargetMap().targets().size())
               .setLibraryCount(librariesCount);

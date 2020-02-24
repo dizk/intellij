@@ -350,7 +350,9 @@ public abstract class BlazeModuleSystemBase implements AndroidModuleSystem, Blaz
     if (isWorkspaceModule) {
       for (BlazeLibrary library :
           BlazeLibraryCollector.getLibraries(
-              ProjectViewManager.getInstance(project).getProjectViewSet(), blazeProjectData)) {
+              project,
+              ProjectViewManager.getInstance(project).getProjectViewSet(),
+              blazeProjectData)) {
         if (library instanceof AarLibrary) {
           ExternalLibrary externalLibrary = toExternalLibrary((AarLibrary) library, decoder);
           if (externalLibrary != null) {

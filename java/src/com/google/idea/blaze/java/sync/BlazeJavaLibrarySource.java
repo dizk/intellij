@@ -19,7 +19,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.idea.blaze.base.model.BlazeLibrary;
 import com.google.idea.blaze.base.model.BlazeProjectData;
 import com.google.idea.blaze.base.sync.libraries.LibrarySource;
+import com.google.idea.blaze.java.libraries.JarCache;
 import com.google.idea.blaze.java.sync.model.BlazeJavaSyncData;
+import com.intellij.openapi.project.Project;
 import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
@@ -43,11 +45,14 @@ class BlazeJavaLibrarySource extends LibrarySource.Adapter {
 
   @Nullable
   @Override
-  public Predicate<BlazeLibrary> getLibraryFilter() {
+  public Predicate<BlazeLibrary> getLibraryFilter(Project project) {
     BlazeJavaSyncData syncData = blazeProjectData.getSyncState().get(BlazeJavaSyncData.class);
     if (syncData == null) {
       return o -> true;
     }
-    return new LibraryGlobFilter(syncData.getExcludedLibraries());
+    EmptyLibraryFilter emptyLibraryFilter =
+        new EmptyLibraryFilter(
+            blazeProjectData.getArtifactLocationDecoder(), JarCache.getInstance(project));
+    return new LibraryGlobFilter(syncData.getExcludedLibraries()).and(emptyLibraryFilter);
   }
 }

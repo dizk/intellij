@@ -96,6 +96,7 @@ public class UnpackedAars {
   private static final Logger logger = Logger.getInstance(UnpackedAars.class);
 
   private final File cacheDir;
+  private final Project project;
 
   /** The state of the cache as of the last call to {@link #readFileState}. */
   private volatile ImmutableMap<String, File> cacheState = ImmutableMap.of();
@@ -108,6 +109,7 @@ public class UnpackedAars {
     BlazeImportSettings importSettings =
         BlazeImportSettingsManager.getInstance(project).getImportSettings();
     this.cacheDir = getCacheDir(importSettings);
+    this.project = project;
   }
 
   private static class AarAndJar {
@@ -158,7 +160,8 @@ public class UnpackedAars {
     }
 
     ImmutableMap<String, File> cacheFiles = readFileState();
-    ImmutableMap<String, AarAndJar> projectState = getArtifactsToCache(viewSet, projectData);
+    ImmutableMap<String, AarAndJar> projectState =
+        getArtifactsToCache(project, viewSet, projectData);
     ImmutableMap<String, BlazeArtifact> aarOutputs =
         projectState.entrySet().stream()
             .collect(toImmutableMap(Map.Entry::getKey, e -> e.getValue().aar));
@@ -361,9 +364,9 @@ public class UnpackedAars {
    * cached.
    */
   private static ImmutableMap<String, AarAndJar> getArtifactsToCache(
-      ProjectViewSet projectViewSet, BlazeProjectData projectData) {
+      Project project, ProjectViewSet projectViewSet, BlazeProjectData projectData) {
     Collection<BlazeLibrary> libraries =
-        BlazeLibraryCollector.getLibraries(projectViewSet, projectData);
+        BlazeLibraryCollector.getLibraries(project, projectViewSet, projectData);
     List<AarLibrary> aarLibraries =
         libraries.stream()
             .filter(library -> library instanceof AarLibrary)

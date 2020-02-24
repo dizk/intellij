@@ -137,7 +137,10 @@ public class JdepsFileReader {
       futures.add(
           FetchExecutor.EXECUTOR.submit(
               () -> {
-                totalSizeLoaded.addAndGet(updatedFile.getLength());
+                long length = updatedFile.getLength();
+                if (length > 0) {
+                  totalSizeLoaded.addAndGet(length);
+                }
                 try (InputStream inputStream = updatedFile.getInputStream()) {
                   Deps.Dependencies dependencies = Deps.Dependencies.parseFrom(inputStream);
                   if (dependencies == null) {

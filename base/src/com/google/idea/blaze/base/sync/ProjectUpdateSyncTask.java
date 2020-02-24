@@ -402,7 +402,7 @@ final class ProjectUpdateSyncTask {
         workspaceModifiableModel);
 
     List<BlazeLibrary> libraries =
-        BlazeLibraryCollector.getLibraries(projectViewSet, newBlazeProjectData);
+        BlazeLibraryCollector.getLibraries(project, projectViewSet, newBlazeProjectData);
     LibraryEditor.updateProjectLibraries(
         project, context, projectViewSet, newBlazeProjectData, libraries);
     LibraryEditor.configureDependencies(workspaceModifiableModel, libraries);

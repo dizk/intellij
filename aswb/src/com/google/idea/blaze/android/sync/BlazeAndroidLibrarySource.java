@@ -24,6 +24,7 @@ import com.google.idea.blaze.base.model.BlazeLibrary;
 import com.google.idea.blaze.base.model.BlazeProjectData;
 import com.google.idea.blaze.base.sync.libraries.LibrarySource;
 import com.google.idea.blaze.java.sync.model.BlazeJarLibrary;
+import com.intellij.openapi.project.Project;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -55,7 +56,7 @@ public class BlazeAndroidLibrarySource extends LibrarySource.Adapter {
 
   @Nullable
   @Override
-  public Predicate<BlazeLibrary> getLibraryFilter() {
+  public Predicate<BlazeLibrary> getLibraryFilter(Project project) {
     BlazeAndroidSyncData syncData = blazeProjectData.getSyncState().get(BlazeAndroidSyncData.class);
     if (syncData == null || syncData.importResult.aarLibraries.isEmpty()) {
       return null;
