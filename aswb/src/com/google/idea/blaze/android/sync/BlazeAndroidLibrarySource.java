@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 /** {@link LibrarySource} for android. */
@@ -57,10 +58,22 @@ public class BlazeAndroidLibrarySource extends LibrarySource.Adapter {
   @Override
   public Predicate<BlazeLibrary> getLibraryFilter() {
     BlazeAndroidSyncData syncData = blazeProjectData.getSyncState().get(BlazeAndroidSyncData.class);
-    if (syncData == null || syncData.importResult.aarLibraries.isEmpty()) {
+    if (syncData == null) {
       return null;
     }
-    return new AarJarFilter(syncData.importResult.aarLibraries.values());
+
+    Predicate<BlazeLibrary> finalPredicate = null;
+
+    if (syncData.importResult.aarLibraries.isEmpty()) {
+      finalPredicate = new AarJarFilter(syncData.importResult.aarLibraries.values());
+    }
+    if (syncData.importResult.resourceJars.isEmpty()) {
+      Predicate<BlazeLibrary> resJarFilter =
+          new ResourceJarFilter(syncData.importResult.resourceJars);
+      finalPredicate = finalPredicate == null ? resJarFilter : finalPredicate.and(resJarFilter);
+    }
+
+    return finalPredicate;
   }
 
   /**
@@ -102,6 +115,31 @@ public class BlazeAndroidLibrarySource extends LibrarySource.Adapter {
       ArtifactLocation location = jarLibrary.libraryArtifact.jarForIntellijLibrary();
       String configurationLessPath = location.getRelativePath();
       return !aarJarsPaths.contains(configurationLessPath);
+    }
+  }
+
+  /** Filters out any resource JARs exported by android targets. */
+  @VisibleForTesting
+  public static class ResourceJarFilter implements Predicate<BlazeLibrary> {
+    private final Set<String> resourceJarPaths;
+
+    public ResourceJarFilter(Collection<BlazeJarLibrary> resourceJars) {
+      this.resourceJarPaths =
+          resourceJars.stream()
+              .map(e -> e.libraryArtifact.jarForIntellijLibrary().getRelativePath())
+              .collect(Collectors.toCollection(HashSet::new));
+    }
+
+    @Override
+    public boolean test(BlazeLibrary blazeLibrary) {
+      if (!(blazeLibrary instanceof BlazeJarLibrary)) {
+        return true;
+      }
+      return !resourceJarPaths.contains(
+          ((BlazeJarLibrary) blazeLibrary)
+              .libraryArtifact
+              .jarForIntellijLibrary()
+              .getRelativePath());
     }
   }
 }
