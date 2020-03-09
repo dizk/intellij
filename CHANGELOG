@@ -1,3 +1,6 @@
+v2020.03.09
+===========
+
 v2020.02.24
 ===========
 * Allow queuing sync actions while building indices.
