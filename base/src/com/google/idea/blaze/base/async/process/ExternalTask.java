@@ -27,6 +27,7 @@ import com.google.idea.blaze.base.scope.BlazeScope;
 import com.google.idea.blaze.base.scope.Scope;
 import com.google.idea.blaze.base.scope.output.IssueOutput;
 import com.google.idea.blaze.base.scope.output.PrintOutput;
+import com.intellij.execution.CommandLineUtil;
 import com.intellij.execution.configurations.PathEnvironmentVariableUtil;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProcessCanceledException;
@@ -247,7 +248,7 @@ public interface ExternalTask {
 
         ProcessBuilder builder =
             new ProcessBuilder()
-                .command(resolveCustomBinary(command))
+                .command(CommandLineUtil.toCommandLine(resolveCustomBinary(command)))
                 .redirectErrorStream(redirectErrorStream)
                 .directory(workingDirectory);
 

@@ -36,6 +36,7 @@ import com.intellij.concurrency.AsyncUtil;
 import com.intellij.execution.ExecutionException;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManagerCore;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.BuildNumber;
 import com.intellij.openapi.util.Key;
 import java.io.BufferedInputStream;
@@ -55,6 +56,8 @@ import javax.annotation.Nullable;
 
 /** Handles finding files to deploy and copying these into the sandbox. */
 class BlazeIntellijPluginDeployer {
+
+  private static final Logger logger = Logger.getInstance(BlazeIntellijPluginDeployer.class);
 
   private static final BoolExperiment deployJavaAgents =
       new BoolExperiment("blaze.plugin.run.deploy.javaagents", true);
@@ -230,6 +233,7 @@ class BlazeIntellijPluginDeployer {
       Files.copy(src.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
       dest.deleteOnExit();
     } catch (IOException e) {
+      logger.error(e);
       throw new ExecutionException("Error copying plugin file to sandbox", e);
     }
   }
