@@ -47,6 +47,8 @@ import com.google.idea.blaze.base.util.PackagePrefixCalculator;
 import com.google.idea.blaze.java.sync.model.BlazeContentEntry;
 import com.google.idea.blaze.java.sync.model.BlazeSourceDirectory;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.io.FileUtil;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.Comparator;
@@ -357,7 +359,7 @@ public final class SourceDirectoryCalculator {
   private static String sourcePathRelativeToDirectoryRoot(
       WorkspacePath directoryRoot, WorkspacePath workspacePath) {
     int directoryRootLength = directoryRoot.relativePath().length();
-    String relativePath = workspacePath.relativePath();
+    String relativePath = FileUtil.toSystemIndependentName(workspacePath.relativePath());
     final String relativeSourcePath;
     if (relativePath.length() > directoryRootLength) {
       if (directoryRootLength > 0) {
